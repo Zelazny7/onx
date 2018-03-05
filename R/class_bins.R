@@ -1,5 +1,5 @@
 ## variable class is just a container object
-# variables -- Has Performance
+# variables --> Has Performance
 #  |- levels
 #     |- bins
 #
@@ -11,6 +11,9 @@
 ## u
 ## predict
 ##
+
+### TODO: Start documenting this stuff NOW
+
 setClass("Bin", contains = "VIRTUAL")
 
 BinNumeric <- setClass("BinNumeric", slots = list(
@@ -27,6 +30,14 @@ BinNumeric <- setClass("BinNumeric", slots = list(
     return(valid)
   },
   contains = "Bin"
+)
+
+BinException <- setClass("BinException", slots=list(
+  exception = "numeric"),
+  contains = "Bin",
+  validity = function(object) {
+    identical(length(object@exception), 1L) && !is.na(object@exception)
+  }
 )
 
 BinFactor <- setClass("BinFactor", slots = list(
@@ -55,6 +66,14 @@ setMethod(
   signature = c("BinFactor", "factor"),
   definition = function(object, x, ...) {
     x == object@level & !is.na(x)
+  }
+)
+
+setMethod(
+  "get_boolean_mask",
+  signature = c("BinException", "numeric"),
+  definition = function(object, x, ...) {
+    x == object@exception & !is.na(x)
   }
 )
 
@@ -99,14 +118,12 @@ setMethod(
     paste0("(", l, " - ", u, "]")
   })
 
-
 setMethod(
   "get_label",
   signature = "BinFactor",
   definition = function(object, ...) {
     object@level
   })
-
 
 setMethod(
   "get_label",
@@ -115,5 +132,9 @@ setMethod(
     "Missing"
   })
 
-
-
+setMethod(
+  "get_label",
+  signature = "BinException",
+  definition = function(object, ...) {
+    object@exception
+  })
