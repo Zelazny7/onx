@@ -41,11 +41,12 @@ BinMissing <- setClass("BinMissing", contains = "Bin")
 
 setGeneric("get_boolean_mask", function(object, x, ...) standardGeneric("get_boolean_mask"))
 
+## TODO: Document that numeric bins are left-open and right-closed
 setMethod(
   "get_boolean_mask",
   signature = c("BinNumeric", "numeric"),
   definition = function(object, x, ...) {
-    x >= object@lower & x < object@upper & !is.na(x)
+    x > object@lower & x <= object@upper & !is.na(x)
   }
 )
 
@@ -66,6 +67,7 @@ setMethod(
 
 setGeneric("combine_bins", function(a, b) standardGeneric("combine_bins"))
 setGeneric("is_valid_combination", function(a, b) standardGeneric("is_valid_combination"))
+setGeneric("get_label", def = function(object, ...) standardGeneric("get_label"))
 
 setMethod(
   "is_valid_combination",
@@ -88,40 +90,30 @@ setMethod(
     }
   })
 
-
-## A level maintains a list of bins
-## has operations for combining them
-## a value assignment mapping as well
-## A label
-## add bins
-## remove bins
-setClass("Level", slots = c(bins="list", value="ANY", label="character"), contains="VIRTUAL")
-
-## differen
-setClass("LevelContinuous", contains="Level")
-
-setClass("LevelDiscrete", contains="Level")
-
 setMethod(
-  "get_boolean_mask",
-  signature = c("Level", "ANY"),
-  definition = function(object, x, ...) {
-    Reduce(`|`, lapply(object@bins, get_boolean_mask, x))
+  "get_label",
+  signature = "BinNumeric",
+  definition = function(object, digits=3, ...) {
+    l <- round(object@lower, digits)
+    u <- round(object@upper, digits)
+    paste0("(", l, " - ", u, "]")
   })
 
-setGeneric("set_level_value", def = function(object, value) standardGeneric("set_level_value"))
 
 setMethod(
-  "set_level_value",
-  signature("")
-)
+  "get_label",
+  signature = "BinFactor",
+  definition = function(object, ...) {
+    object@level
+  })
 
 
-a <- BinNumeric(lower=7, upper=20)
-b <- BinNumeric(lower=5, upper=10)
+setMethod(
+  "get_label",
+  signature = "BinMissing",
+  definition = function(object, ...) {
+    "Missing"
+  })
 
-l <- Level(bins=list(a, b))
-
-get_boolean_mask(l, 1:100)
 
 
