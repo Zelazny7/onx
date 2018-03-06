@@ -13,8 +13,9 @@ Suggests:
     testthat
 Depends:
     Matrix
-Collate:
+Collate: 
+    'generics.R'
     'class_bins.R'
     'class_level.R'
-    'class_variable.R'
-    'hello.R'
+    'class_transform.R'
+RoxygenNote: 6.0.1

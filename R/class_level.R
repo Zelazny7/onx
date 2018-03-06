@@ -1,4 +1,4 @@
-#' @include class_bins.R
+#' @include class_bins.R generics.R
 
 setClassUnion("LevelContinuousAppendable", c("BinNumeric", "BinMissing", "BinException"))
 setClassUnion("LevelDiscreteAppendable", c("BinFactor", "BinMissing"))
@@ -15,13 +15,20 @@ setClassUnion("LevelDiscreteAppendable", c("BinFactor", "BinMissing"))
 ### TODO: Think about dropping the label and just generate it on request
 setClass("Level", slots = c(bins="list", value="ANY"), contains="VIRTUAL")
 
-## differen
 LevelContinuous <- setClass("LevelContinuous", contains="Level")
 
 setValidity(
   "LevelContinuous",
   function(object) {
     all(vapply(object@bins, is, TRUE, "LevelContinuousAppendable"))
+  })
+
+setMethod(
+  "initialize",
+  signature = "Level",
+  function(.Object) {
+    .Object@value <- NaN
+    .Object
   })
 
 LevelDiscrete <- setClass("LevelDiscrete", contains="Level")
@@ -32,15 +39,14 @@ setValidity(
     all(vapply(object@bins, is, TRUE, "LevelDiscreteAppendable"))
   })
 
+setMethod("len", "Level", function(x) length(x@bins))
 
 setMethod(
   "get_boolean_mask",
   signature = c("Level", "ANY"),
   definition = function(object, x, ...) {
-    Reduce(`|`, lapply(object@bins, get_boolean_mask, x))
+    Reduce(`|`, lapply(object@bins, get_boolean_mask, x, ...))
   })
-
-setGeneric("value<-", def = function(object, value) standardGeneric("value<-"))
 
 setMethod(
   "value<-",
@@ -75,4 +81,20 @@ setMethod(
   definition = function(object, bin) {
     object@bins <- append(object@bins, bin)
     object
+  })
+
+setMethod(
+  "get_exceptions",
+  signature = c("Level"),
+  definition = function(object, ...) {
+    do.call(c, lapply(object@bins, get_exceptions))
+  })
+
+setMethod(
+  "show",
+  signature = "Level",
+  definition = function(object) {
+    
+    cat(sprintf("%20s => %s", get_label(object), object@value))
+    
   })

@@ -1,16 +1,10 @@
+#' @include generics.R
+
 ## variable class is just a container object
 # variables --> Has Performance
 #  |- levels
 #     |- bins
 #
-
-## S3?
-
-## bin interface
-## constuctor
-## u
-## predict
-##
 
 ### TODO: Start documenting this stuff NOW
 
@@ -50,14 +44,24 @@ BinFactor <- setClass("BinFactor", slots = list(
 
 BinMissing <- setClass("BinMissing", contains = "Bin")
 
-setGeneric("get_boolean_mask", function(object, x, ...) standardGeneric("get_boolean_mask"))
+setMethod(
+  "get_exceptions",
+  signature = c("ANY"),
+  definition = function(object, ...) return(NULL)
+)
+
+setMethod(
+  "get_exceptions",
+  signature = c("BinException"),
+  definition = function(object, ...) return(object@exception)
+)
 
 ## TODO: Document that numeric bins are left-open and right-closed
 setMethod(
   "get_boolean_mask",
   signature = c("BinNumeric", "numeric"),
-  definition = function(object, x, ...) {
-    x > object@lower & x <= object@upper & !is.na(x)
+  definition = function(object, x, ..., mask=FALSE) {
+    x > object@lower & x <= object@upper & !is.na(x) & !mask
   }
 )
 
@@ -86,7 +90,6 @@ setMethod(
 
 setGeneric("combine_bins", function(a, b) standardGeneric("combine_bins"))
 setGeneric("is_valid_combination", function(a, b) standardGeneric("is_valid_combination"))
-setGeneric("get_label", def = function(object, ...) standardGeneric("get_label"))
 
 setMethod(
   "is_valid_combination",
@@ -109,6 +112,11 @@ setMethod(
     }
   })
 
+
+## get_label ----
+#' @param digits rounding digits for numeric bin boundaries
+#' @rdname get_label-methods
+#' @aliases get_label,BinNumeric-method
 setMethod(
   "get_label",
   signature = "BinNumeric",
