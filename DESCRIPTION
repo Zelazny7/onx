@@ -9,8 +9,12 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Suggests: testthat
-Collate: 
+Suggests:
+    testthat
+Depends:
+    Matrix
+Collate:
     'class_bins.R'
     'class_level.R'
+    'class_variable.R'
     'hello.R'

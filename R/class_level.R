@@ -13,7 +13,7 @@ setClassUnion("LevelDiscreteAppendable", c("BinFactor", "BinMissing"))
 ### TODO: Need method to reduce or dedupe bins within a level
 ### TODO: Sort bins within a level
 ### TODO: Think about dropping the label and just generate it on request
-setClass("Level", slots = c(bins="list", value="ANY", label="character"), contains="VIRTUAL")
+setClass("Level", slots = c(bins="list", value="ANY"), contains="VIRTUAL")
 
 ## differen
 LevelContinuous <- setClass("LevelContinuous", contains="Level")
@@ -51,13 +51,13 @@ setMethod(
   }
 )
 
+## generate the labels on-demand
 setMethod(
   "get_label",
   signature = c("Level"),
   definition = function(object, ...) {
     do.call(paste, c(lapply(object@bins, get_label, ...), sep=", "))
   })
-
 
 setGeneric("add_bin", def = function(object, bin) standardGeneric("add_bin"))
 
