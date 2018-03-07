@@ -56,7 +56,9 @@ setMethod(
   definition = function(object, ...) return(object@exception)
 )
 
-## TODO: Document that numeric bins are left-open and right-closed
+## get_boolean_mask-BinNumeric ----
+#' @rdname get_boolean_mask-methods
+#' @aliases get_boolean_mask,BinNumeric,factor-method
 setMethod(
   "get_boolean_mask",
   signature = c("BinNumeric", "numeric"),
@@ -65,6 +67,9 @@ setMethod(
   }
 )
 
+## get_boolean_mask-BinFactor ----
+#' @rdname get_boolean_mask-methods
+#' @aliases get_boolean_mask,BinFactor,factor-method
 setMethod(
   "get_boolean_mask",
   signature = c("BinFactor", "factor"),
@@ -73,6 +78,9 @@ setMethod(
   }
 )
 
+## get_boolean_mask-BinException ----
+#' @rdname get_boolean_mask-methods
+#' @aliases get_boolean_mask,BinException,numeric-method
 setMethod(
   "get_boolean_mask",
   signature = c("BinException", "numeric"),
@@ -81,6 +89,9 @@ setMethod(
   }
 )
 
+## get_boolean_mask-BinMissing ----
+#' @rdname get_boolean_mask-methods
+#' @aliases get_boolean_mask,BinMissing,ANY-method
 setMethod(
   "get_boolean_mask",
   signature = c("BinMissing", "ANY"),
@@ -89,6 +100,7 @@ setMethod(
 
 
 setGeneric("combine_bins", function(a, b) standardGeneric("combine_bins"))
+
 setGeneric("is_valid_combination", function(a, b) standardGeneric("is_valid_combination"))
 
 setMethod(
@@ -113,7 +125,7 @@ setMethod(
   })
 
 
-## get_label ----
+## get_label-BinNumeric ----
 #' @param digits rounding digits for numeric bin boundaries
 #' @rdname get_label-methods
 #' @aliases get_label,BinNumeric-method
@@ -126,6 +138,9 @@ setMethod(
     paste0("(", l, " - ", u, "]")
   })
 
+## get_label-BinFactor ----
+#' @rdname get_label-methods
+#' @aliases get_label,BinFactor-method
 setMethod(
   "get_label",
   signature = "BinFactor",
@@ -133,6 +148,9 @@ setMethod(
     object@level
   })
 
+## get_label-BinMissing ----
+#' @rdname get_label-methods
+#' @aliases get_label,BinMissing-method
 setMethod(
   "get_label",
   signature = "BinMissing",
@@ -140,6 +158,9 @@ setMethod(
     "Missing"
   })
 
+## get_label-BinException ----
+#' @rdname get_label-methods
+#' @aliases get_label,BinException-method
 setMethod(
   "get_label",
   signature = "BinException",

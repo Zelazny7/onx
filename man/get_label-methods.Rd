@@ -3,12 +3,21 @@
 \docType{methods}
 \name{get_label}
 \alias{get_label}
+\alias{get_label,BinException-method}
+\alias{get_label,BinFactor-method}
+\alias{get_label,BinMissing-method}
 \alias{get_label,BinNumeric-method}
 \title{Get Object Labels}
 \usage{
 get_label(object, ...)
 
 \S4method{get_label}{BinNumeric}(object, digits = 3, ...)
+
+\S4method{get_label}{BinFactor}(object, ...)
+
+\S4method{get_label}{BinMissing}(object, ...)
+
+\S4method{get_label}{BinException}(object, ...)
 }
 \arguments{
 \item{object}{An object that can generate labels.}
@@ -20,3 +29,4 @@ get_label(object, ...)
 \description{
 Some additional info
 }
+
