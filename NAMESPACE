@@ -2,3 +2,4 @@
 
 export(get_boolean_mask)
 export(get_label)
+exportClasses(Bin)

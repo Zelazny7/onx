@@ -6,8 +6,15 @@
 #     |- bins
 #
 
-### TODO: Start documenting this stuff NOW
-
+## Bin Abstract Class ----
+#' Bin Abstract Class
+#'
+#' The Bin abstract class for all unit bin levels such as \link{BinNumeric}
+#' \link{BinFactor}, \link{BinMissing}, and \link{BinException}.
+#'
+#' @rdname Bin-class
+#' @aliases Bin-class
+#' @export
 setClass("Bin", contains = "VIRTUAL")
 
 BinNumeric <- setClass("BinNumeric", slots = list(
