@@ -7,10 +7,10 @@
 #
 
 ## Bin Abstract Class ----
-#' Bin Abstract Class
+#' @title Bin Abstract Class
 #'
-#' The Bin abstract class for all unit bin levels such as \link{BinNumeric}
-#' \link{BinFactor}, \link{BinMissing}, and \link{BinException}.
+#' @description  The Bin abstract class for all unit bin levels such as
+#' \link{BinNumeric} \link{BinFactor}, \link{BinMissing}, and \link{BinException}.
 #'
 #' @rdname Bin-class
 #' @aliases Bin-class
@@ -106,30 +106,18 @@ setMethod(
 )
 
 
-setGeneric("combine_bins", function(a, b) standardGeneric("combine_bins"))
-
-setGeneric("is_valid_combination", function(a, b) standardGeneric("is_valid_combination"))
-
 setMethod(
-  "is_valid_combination",
+  "combinable",
   signature = c("BinNumeric", "BinNumeric"),
   definition = function(a, b) {
     return(a@upper >= b@lower && b@upper >= a@lower)
   })
 
-### Used for reduction?
 setMethod(
-  "combine_bins",
-  signature = c("BinNumeric", "BinNumeric"),
-  definition = function(a, b) {
-    if (is_valid_combination(a, b)) {
-      lower <- min(a@lower, b@lower)
-      upper <- max(a@upper, b@upper)
-      return(BinNumeric(lower=lower, upper=upper))
-    } else {
-      return(list(a, b))
-    }
-  })
+  "combinable",
+  signature = c("Bin", "Bin"),
+  definition = function(a, b) return(FALSE))
+
 
 
 ## get_label-BinNumeric ----
@@ -174,3 +162,85 @@ setMethod(
   definition = function(object, ...) {
     object@exception
   })
+
+
+
+################# Combine/Expand ----
+
+
+## combine-BinNumeric,BinNumeric ----
+#' @rdname combine-methods
+#' @aliases combine,BinNumeric,BinNumeric-method
+setMethod(
+  "combine",
+  signature = c("BinNumeric", "BinNumeric"),
+  definition = function(a, b) {
+    if (combinable(a, b)) {
+      lower <- min(a@lower, b@lower)
+      upper <- max(a@upper, b@upper)
+      return(BinNumeric(lower=lower, upper=upper))
+    } else {
+      return(list(a, b))
+    }
+  })
+
+
+## combine-Bin,Bin ----
+#' @rdname combine-methods
+#' @aliases combine,Bin,Bin-method
+setMethod(
+  "combine",
+  signature = c("Bin", "Bin"),
+  definition = function(a, b) return(list(a, b)))
+
+
+setMethod(
+  "combine",
+  signature = c("list", "Bin"),
+  definition = function(a, b) {
+    
+    ## try to combine b into any elements of a, otherwise append to list
+    for (i in seq_along(a)) {
+      if (combinable(a[[i]], b)) {
+        a[[i]] <- combine(a[[i]], b)
+        return(a)
+      }
+    }
+    
+    return(append(a, b))
+  }
+  
+)
+
+
+## expand-BinNumeric,BinNumeric ----
+#' @param breaks A numeric vector of two or more cut points.
+#' @rdname expand-methods
+#' @aliases combineexpand,BinNumeric,BinNumeric-method
+setMethod(
+  "expand",
+  signature = c("BinNumeric"),
+  definition = function(object, breaks, ...) {
+    
+    ## make sure breaks are between current lower and upper
+    breaks <- subset(breaks, breaks <= object@upper & breaks >= object@lower)
+    breaks <- sort(unique(c(object@lower, breaks, object@upper)))
+    
+    if (length(breaks) <= 1) return(object)
+    
+    l <- list()
+    for (i in seq.int(length(breaks) - 1)) {
+      l[[i]] <- BinNumeric(lower=breaks[[i]], upper=breaks[[i+1]])
+    }
+    
+    return(l)
+  })
+
+
+## Order values ----
+setMethod("ordervalue", signature = "BinNumeric", function(object, ...) object@lower)
+setMethod("ordervalue", signature = "BinFactor", function(object, ...) 0)
+setMethod("ordervalue", signature = "BinException", function(object, ...) object@exception)
+setMethod("ordervalue", signature = "BinMissing", function(object, ...) Inf)
+
+

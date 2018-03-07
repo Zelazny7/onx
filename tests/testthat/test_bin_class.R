@@ -37,21 +37,61 @@ test_that("Boolean masks", {
   
 })
 
-test_that("Combine BinNumeric", {
+test_that("Combine", {
   
   a <- BinNumeric(lower=1, upper=10)
   b <- BinNumeric(lower=7, upper=15)
   c <- BinNumeric(lower=15, upper=20)
   
-  expect_equal(is_valid_combination(a, b), TRUE)
-  expect_equal(is_valid_combination(b, a), TRUE)
-  expect_equal(is_valid_combination(a, c), FALSE)
-  expect_equal(is_valid_combination(c, a), FALSE)
+  ##--- Combining disparate and overlapping numeric bins
+  expect_equal(combinable(a, b), TRUE)
+  expect_equal(combinable(b, a), TRUE)
+  expect_equal(combinable(a, c), FALSE)
+  expect_equal(combinable(c, a), FALSE)
   
-  expect_equal(combine_bins(a, b), BinNumeric(lower=1, upper=15))
-  expect_equal(combine_bins(a, c), list(a, c))
+  expect_equal(combinable(a, BinMissing()), FALSE)
+  expect_equal(combinable(a, BinException(exception=-1)), FALSE)
+  
+  
+  expect_equal(combine(a, b), BinNumeric(lower=1, upper=15))
+  expect_equal(combine(a, c), list(a, c))
+  
+  e <- BinException(exception=-1)
+  f <- BinFactor(level="z")
+  m <- BinMissing()
+  
+  ##--- Combining diferent bin types should return a list
+  expect_equal(combine(a, m), list(a, m))
+  expect_equal(combine(a, f), list(a, f))
+  expect_equal(combine(a, e), list(a, e))
+  expect_equal(combine(f, m), list(f, m))
+  expect_equal(combine(f, e), list(f, e))
+  
+})
 
+test_that("Expand bins",  {
   
+  expect_equal(
+    expand(BinNumeric(lower=1, upper=15), 10),
+    list(BinNumeric(lower=1, upper=10), BinNumeric(lower=10, upper=15)))
+  
+  expect_equal(
+    expand(BinNumeric(lower=1, upper=15), c(20)),
+    list(BinNumeric(lower=1, upper=15)))
+    
+  expect_equal(
+    expand(BinNumeric(lower=1, upper=15), c(-20)),
+    list(BinNumeric(lower=1, upper=15)))
+  
+  expect_equal(
+    expand(BinNumeric(lower=1, upper=20), seq(1, 20, 4)),
+    list(
+      BinNumeric(lower=1, upper=5),
+      BinNumeric(lower=5, upper=9),
+      BinNumeric(lower=9, upper=13),
+      BinNumeric(lower=13, upper=17),
+      BinNumeric(lower=17, upper=20)
+    ))
   
 })
 

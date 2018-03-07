@@ -3,11 +3,11 @@
 \docType{methods}
 \name{get_boolean_mask}
 \alias{get_boolean_mask}
-\alias{get_boolean_mask,BinException,numeric-method}
-\alias{get_boolean_mask,BinFactor,factor-method}
-\alias{get_boolean_mask,BinMissing,ANY-method}
-\alias{get_boolean_mask,BinNumeric,factor-method}
 \alias{get_boolean_mask,BinNumeric,numeric-method}
+\alias{get_boolean_mask,BinNumeric,factor-method}
+\alias{get_boolean_mask,BinFactor,factor-method}
+\alias{get_boolean_mask,BinException,numeric-method}
+\alias{get_boolean_mask,BinMissing,ANY-method}
 \title{Get Boolean Mask}
 \usage{
 get_boolean_mask(object, x, ...)
@@ -31,4 +31,3 @@ get_boolean_mask(object, x, ...)
 Returns a logical vector the same length as argument \code{x} indicating
 membership in an appropriate interval or a match to an appropriate level.
 }
-

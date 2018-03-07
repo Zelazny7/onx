@@ -12,12 +12,11 @@ LazyData: true
 Suggests:
     testthat
 Depends:
-    Matrix,
-    R6
+    Matrix
 Collate:
     'generics.R'
     'class_bins.R'
     'class_level.R'
     'class_transform.R'
     'class_variable.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
