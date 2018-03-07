@@ -1,9 +1,9 @@
 Package: onx
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
+Version: 0.0.0
+Author: Eric Graves
+Maintainer: Eric Graves <gravcon5@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
@@ -12,10 +12,12 @@ LazyData: true
 Suggests:
     testthat
 Depends:
-    Matrix
+    Matrix,
+    R6
 Collate:
     'generics.R'
     'class_bins.R'
     'class_level.R'
     'class_transform.R'
+    'class_variable.R'
 RoxygenNote: 5.0.1

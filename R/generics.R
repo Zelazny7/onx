@@ -1,5 +1,7 @@
 ## Contains generics not specific to a single class
 
+if (!isGeneric("predict")) setGeneric("predict", function(object, ...) standardGeneric("predict"))
+
 setGeneric("get_exceptions", function(object, ...) standardGeneric("get_exceptions"))
 
 ## Get Boolean Mask ----
