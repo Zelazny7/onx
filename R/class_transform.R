@@ -70,14 +70,9 @@ predict_internal_ <- function(out, object, x, mask=FALSE, FUN) {
 setMethod(
   "predict",
   signature = "Transform",
-  function(object, x, type=c("value", "label", "sparse"), mask=FALSE, ...) {
-    type <- match.arg(type)
+  function(object, x, type="value", mask=FALSE, ...) {
+    # type <- match.arg(type)
     switch(type,
-           
-           "value" = {
-             out <- rep(NaN, (length(x)))
-             predict_internal_(out, object, x, mask, function(f, l) l@value)
-           },
            
            "label" = {
              out <- rep("NULL", length(x))
@@ -91,6 +86,11 @@ setMethod(
                sparseMatrix(i=which(f), j=rep(1, sum(f)), x=1, dims = dims)
              })
              do.call(cbind, out)
+           },
+           
+           { ## Default
+             out <- rep(NaN, (length(x)))
+             predict_internal_(out, object, x, mask, function(f, l) l@values[[type]])
            })
   })
 
@@ -168,10 +168,14 @@ setMethod(
   signature = c("Transform", "ANY"),
   definition = function(object, value) {
     
-    stopifnot(identical(len(object), length(value)))
+    stopifnot(identical(len(object), length(value[[1]])))
     
-    for (i in seq_along(value)) {
-      value(object@levels[[i]]) <- value[[i]]
+    for (el in names(value)) {
+      
+      for (i in seq_along(value[[el]])) {
+        value(object@levels[[i]]) <- setNames(list(value[[el]][i]), el)
+      }
+      
     }
     object
   })
@@ -195,34 +199,41 @@ setMethod(
 n <- make_Transform(letters[1:4])
 
 
-predict(b, factor(letters), type="sparse")
-predict(b, factor(letters), type="sparse")
+value(n) <- list(value=1:5, butt=letters[6:10])
+
+# predict(n, factor(letters), type="butt")
 
 
-## this is how to do collapsing ... Not quite
-n <- make_Transform(seq(25, 75, 25))
-## test collapse
-i <- c(1,5)
-
-
-combined <- combine(n@levels[i])
-rest <- n@levels[-i]
-
-v <- do.call(rbind, Map(ordervalue, c(combined, rest)))
-i <- order(v[,1], v[,2])
-
- 
-TransformDiscrete(levels=c(combined, rest)[i])
 # 
 # 
+# predict(b, factor(letters), type="sparse")
+# predict(b, factor(letters), type="sparse")
 # 
 # 
-# #
-# # combine(b@levels[1:3])
-# #
-# # value(b) <- c(1:3, NA)
-# #
-# # predict(b, factor("c"), type="label")
-# #
-# #
-# # n <- make_Transform(seq(0, 10, 2))
+# ## this is how to do collapsing ... Not quite
+# n <- make_Transform(seq(25, 75, 25))
+# ## test collapse
+# i <- c(1,5)
+# 
+# 
+# combined <- combine(n@levels[i])
+# rest <- n@levels[-i]
+# 
+# v <- do.call(rbind, Map(ordervalue, c(combined, rest)))
+# i <- order(v[,1], v[,2])
+# 
+#  
+# TransformDiscrete(levels=c(combined, rest)[i])
+# # 
+# # 
+# # 
+# # 
+# # #
+# # # combine(b@levels[1:3])
+# # #
+# # # value(b) <- c(1:3, NA)
+# # #
+# # # predict(b, factor("c"), type="label")
+# # #
+# # #
+# # # n <- make_Transform(seq(0, 10, 2))

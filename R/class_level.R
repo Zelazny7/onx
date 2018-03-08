@@ -14,7 +14,7 @@ setClassUnion("LevelDiscreteAppendable", c("BinFactor", "BinMissing"))
 ### TODO: Need method to reduce or dedupe bins within a level
 ### TODO: Sort bins within a level
 ### TODO: Think about dropping the label and just generate it on request
-setClass("Level", slots = c(bins="list", value="ANY"), contains="VIRTUAL")
+setClass("Level", slots = c(bins="list", values="list"), contains="VIRTUAL")
 
 LevelContinuous <- setClass("LevelContinuous", contains="Level")
 
@@ -27,8 +27,8 @@ setValidity(
 setMethod(
   "initialize",
   signature = "Level",
-  function(.Object, bins=list(), value=NaN, ...) {
-    .Object@value <- NaN
+  function(.Object, bins=list(), values=list(Value=NaN), ...) {
+    .Object@values <- list(value=NaN)
     .Object@bins <- bins[!duplicated(bins)] ## No duplicated bins
     .Object
   })
@@ -53,9 +53,9 @@ setMethod(
 
 setMethod(
   "value<-",
-  signature = c("Level", "ANY"),
+  signature = c("Level", "list"),
   definition = function(object, value) {
-    object@value <- value
+    object@values <- modifyList(object@values, value)
     object
   }
 )
@@ -98,7 +98,7 @@ setMethod(
   signature = "Level",
   definition = function(object) {
     
-    cat(sprintf("%20s => %s", get_label(object), object@value))
+    cat(sprintf("%20s => %s", get_label(object), object@values[["value"]]))
     
   })
 
