@@ -238,9 +238,20 @@ setMethod(
 
 
 ## Order values ----
-setMethod("ordervalue", signature = "BinNumeric", function(object, ...) object@lower)
-setMethod("ordervalue", signature = "BinFactor", function(object, ...) 0)
-setMethod("ordervalue", signature = "BinException", function(object, ...) object@exception)
-setMethod("ordervalue", signature = "BinMissing", function(object, ...) Inf)
+order_mapping <- c(
+  "BinNumeric"    = 1,
+  "BinFactor"     = 1,
+  "BinException"  = 2,
+  "BinMissing"    = 3)
 
+
+setMethod("ordervalue", "character"   , function(object, ...) order_mapping[[object]])
+setMethod("ordervalue", "BinNumeric"  , function(object, ...) c(ordervalue(class(object)), object@lower))
+
+setMethod("ordervalue", "BinFactor"   , function(object, ...) {
+  c(ordervalue(class(object)), as.numeric(charToRaw(object@level)))
+  })
+
+setMethod("ordervalue", "BinException", function(object, ...) c(ordervalue(class(object)), object@exception))
+setMethod("ordervalue", "BinMissing"  , function(object, ...) c(ordervalue(class(object)), Inf))
 

@@ -90,3 +90,22 @@ setGeneric("combinable", function(a, b) standardGeneric("combinable"))
 
 #' @export
 setGeneric("ordervalue", function(object, ...) standardGeneric("ordervalue"))
+
+## Sort Objects by their OrderValue ----
+#' Sort Objects by their OrderValue
+#'
+#' Sort a collection of objects by their \link{ordervalue}s
+#'
+#' @param object First object.
+#' @param ... Additional arguments passed on to other methods.
+#' 
+#' @export
+#' @docType methods
+#' @rdname Sort-methods
+setGeneric("Sort", function(object, ...) standardGeneric("Sort"))
+
+
+
+
+
+

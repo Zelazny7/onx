@@ -16,7 +16,7 @@ TransformContinuous <- setClass("TransformContinuous", contains = "Transform")
 setValidity(
   "TransformContinuous",
   method = function(object) {
-    result <- vapply(object@levels, is, TRUE, "LevelContinuous")
+    result <- all(vapply(object@levels, is, TRUE, "LevelContinuous"))
     if (result) result else "All levels must be LevelContinuous objects"
   })
 
@@ -25,7 +25,7 @@ TransformDiscrete <- setClass("TransformDiscrete", contains = "Transform")
 setValidity(
   "TransformDiscrete",
   method = function(object) {
-    result <- vapply(object@levels, is, TRUE, "LevelDiscrete")
+    result <- all(vapply(object@levels, is, TRUE, "LevelDiscrete"))
     if (result) result else "All levels must be LevelDiscrete objects"
   })
 
@@ -192,10 +192,37 @@ setMethod(
 
 
 
-b <- make_Transform(letters[1:3])
-value(b) <- c(1:3, NA)
-
-predict(b, factor("c"), type="label")
+n <- make_Transform(letters[1:4])
 
 
-n <- make_Transform(seq(0, 10, 2))
+predict(b, factor(letters), type="sparse")
+predict(b, factor(letters), type="sparse")
+
+
+## this is how to do collapsing ... Not quite
+n <- make_Transform(seq(25, 75, 25))
+## test collapse
+i <- c(1,5)
+
+
+combined <- combine(n@levels[i])
+rest <- n@levels[-i]
+
+v <- do.call(rbind, Map(ordervalue, c(combined, rest)))
+i <- order(v[,1], v[,2])
+
+ 
+TransformDiscrete(levels=c(combined, rest)[i])
+# 
+# 
+# 
+# 
+# #
+# # combine(b@levels[1:3])
+# #
+# # value(b) <- c(1:3, NA)
+# #
+# # predict(b, factor("c"), type="label")
+# #
+# #
+# # n <- make_Transform(seq(0, 10, 2))

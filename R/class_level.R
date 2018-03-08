@@ -3,12 +3,6 @@
 setClassUnion("LevelContinuousAppendable", c("BinNumeric", "BinMissing", "BinException"))
 setClassUnion("LevelDiscreteAppendable", c("BinFactor", "BinMissing"))
 
-order_mapping <- c(
-  "BinNumeric"    = 1,
-  "BinFactor"     = 1,
-  "BinException"  = 2,
-  "BinMissing"    = 3)
-
 
 ## A level maintains a list of bins
 ## has operations for combining them
@@ -35,7 +29,7 @@ setMethod(
   signature = "Level",
   function(.Object, bins=list(), value=NaN, ...) {
     .Object@value <- NaN
-    .Object@bins <- bins
+    .Object@bins <- bins[!duplicated(bins)] ## No duplicated bins
     .Object
   })
 
@@ -110,31 +104,68 @@ setMethod(
 
 ################# Combine/Expand ----
 
-## combine-LevelContinuousAppendable,LevelContinuousAppendable ----
+## combine-Level,Level ----
 #' @rdname combine-methods
-#' @aliases combine,LevelContinuousAppendable,LevelContinuousAppendable-method
+#' @aliases combine,Level,Level-method
 setMethod(
   "combine",
   signature = c("Level", "Level"),
   definition = function(a, b) {
     
     bins <- Reduce(combine, c(a@bins, b@bins))
+    if (!is.list(bins)) bins <- list(bins)
     
     ## sort by type then value within type
-    v1 <- unlist(Map(ordervalue, bins))
-    v2 <- order(unlist(Map(function(b) order_mapping[[class(b)]], bins)))
+    v <- do.call(rbind, Map(ordervalue, bins))
+    i <- order(v[,1], v[,2])
     
-    i <- order(v1, v2)
+    out <- new(class(a), bins=bins[i])
     
-    new(class(a), bins=bins[i])
+    tryCatch(
+      validObject(out, complete = TRUE),
+      finally = return(out))
+    
   })
 
+## combine-Level,Level ----
+#' @rdname combine-methods
+#' @aliases combine,List,Level-method
+setMethod(
+  "combine",
+  signature = c("list", "Level"),
+  definition = function(a, b) {
+    
+    stopifnot(all(sapply(a, is, "Level")))
+    
+    out <- Reduce(combine, c(a, list(b)))
+    
+    tryCatch(
+      validObject(out, complete = TRUE),
+      finally = return(out))
+    
+  })
 
+## combine-Level,Level ----
+#' @rdname combine-methods
+#' @aliases combine,List,Level-method
+setMethod("combine", c("Level", "list"), function(a, b) combine(b, a))
+    
+
+setMethod("combine", c("list", "missing"), function(a, b) {
+  combine(head(a, -1), tail(a, 1)[[1]])
+})
+
+
+setMethod("ordervalue", "Level", function(object, ...) {
+  v <- do.call(rbind, Map(ordervalue, object@bins))
+  i <- order(v[,1], v[,2])
+  v[i==1,,drop=F]
+})
 
 ## TODO: Create tests for Level class
 
 
-# 
+#  
 # l1 <- LevelContinuous(bins=list(a, BinMissing()))
 # l2 <- LevelContinuous(bins=list(
 #   BinNumeric(lower=5, upper=20),
@@ -142,24 +173,23 @@ setMethod(
 #   BinNumeric(lower=35, upper=50)
 # 
 # ))
+# l3 <- LevelContinuous(bins=list(
+#   BinNumeric(lower=60, upper=100)
+# ))
+# l4 <- LevelContinuous(bins=list(
+#   BinException(exception=-1),
+#   BinMissing()
+# ))
 # 
-# 
-# l <- c(l1@bins, l2@bins)
 # 
 # combine(l1, l2)
 # 
-# l <- c(l1@bins, l2@bins)
+# # 
+# arg1 <- list(l1, l2, l3)
+#  
+# # Reduce(combine, arg1[2:3])
+# # 
+# combine(arg1, l4)
 # 
-# l3 <- LevelDiscrete(bins=list(
-#   BinFactor(level="a"),
-#   BinMissing()
-#   ))
-# l4 <- LevelContinuous(bins=list(
-#   BinFactor(level="b"),
-#   BinFactor(level="c"),
-#   BinFactor(level="d")
-# ))
 # 
-# l <- c(l3@bins, l4@bins)
 # 
-# combine(l3, l4)
