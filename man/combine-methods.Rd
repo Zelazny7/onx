@@ -6,7 +6,10 @@
 \alias{combine,BinNumeric,BinNumeric-method}
 \alias{combine,Bin,Bin-method}
 \alias{combine,Level,Level-method}
-\alias{combine,LevelContinuousAppendable,LevelContinuousAppendable-method}
+\alias{combine,list,Level-method}
+\alias{combine,List,Level-method}
+\alias{combine,Level,list-method}
+\alias{combine,List,Level-method}
 \title{Combine Objects}
 \usage{
 combine(a, b, ...)
@@ -16,6 +19,10 @@ combine(a, b, ...)
 \S4method{combine}{Bin,Bin}(a, b)
 
 \S4method{combine}{Level,Level}(a, b)
+
+\S4method{combine}{list,Level}(a, b)
+
+\S4method{combine}{Level,list}(a, b)
 }
 \arguments{
 \item{a}{First object to be combined.}

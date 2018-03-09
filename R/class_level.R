@@ -102,7 +102,23 @@ setMethod(
     
   })
 
+
+setMethod(
+  "Sort",
+  signature = "Level",
+  definition = function(object, ...) {
+    
+    bins <- Reduce(combine, c(object@bins))
+    if (!is.list(bins)) bins <- list(bins)
+    new(class(object), bins=bins)
+  }
+)
+
 ################# Combine/Expand ----
+
+
+
+
 
 ## combine-Level,Level ----
 #' @rdname combine-methods

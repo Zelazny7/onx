@@ -17,6 +17,8 @@
 #' @export
 setClass("Bin", contains = "VIRTUAL")
 
+#' @import methods
+#' @export BinNumeric
 BinNumeric <- setClass("BinNumeric", slots = list(
     lower = "numeric",
     upper = "numeric"),
@@ -33,6 +35,8 @@ BinNumeric <- setClass("BinNumeric", slots = list(
   contains = "Bin"
 )
 
+#' @import methods
+#' @export BinException
 BinException <- setClass("BinException", slots=list(
   exception = "numeric"),
   contains = "Bin",
@@ -41,6 +45,8 @@ BinException <- setClass("BinException", slots=list(
   }
 )
 
+#' @import methods
+#' @export BinFactor
 BinFactor <- setClass("BinFactor", slots = list(
   level = "character"),
   prototype = list(
@@ -49,6 +55,8 @@ BinFactor <- setClass("BinFactor", slots = list(
   contains = "Bin"
 )
 
+#' @import methods
+#' @export BinMissing
 BinMissing <- setClass("BinMissing", contains = "Bin")
 
 setMethod(
@@ -163,6 +171,15 @@ setMethod(
     object@exception
   })
 
+## show-Bin ----
+#' @rdname show-methods
+#' @aliases show,Bin-method
+setMethod(
+  "show",
+  signature = "Bin",
+  definition = function(object) {
+    cat(get_label(object), sep = "\n")
+  })
 
 
 ################# Combine/Expand ----
@@ -198,19 +215,19 @@ setMethod(
   "combine",
   signature = c("list", "Bin"),
   definition = function(a, b) {
-    
-    ## try to combine b into any elements of a, otherwise append to list
+
+    # try to combine b into any elements of a, otherwise append to list
     for (i in seq_along(a)) {
       if (combinable(a[[i]], b)) {
         a[[i]] <- combine(a[[i]], b)
-        return(a)
+        return(Reduce(combine, a))
       }
     }
-    
+
     return(append(a, b))
-  }
-  
-)
+  })
+
+setMethod("combine", signature = c("Bin", "list"), function(a, b) combine(b, a))
 
 
 ## expand-BinNumeric,BinNumeric ----

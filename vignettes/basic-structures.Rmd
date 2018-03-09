@@ -1,0 +1,98 @@
+---
+title: "Basic Structures in onx"
+author: "Eric Graves"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic Structures in onx}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(onx)
+```
+
+The `onx` package is built on a foundation of basic structures that describe variable transformations. These structures
+can be composed in interesting ways to describe how inputs map to outputs. Further, these structures are supported
+by a set of generic methods allowing them to be manipulated consistently and intuitively.
+
+The basic structures in `onx` are Bins, Levels, and Transforms
+
+## Bins
+
+Bins are the atomic units of transformations. A bin describes a mapping from an input to an output. The Bin class is 
+abstract and iherited by four specialized types:
+
+| Bin subtype | Description | Slots |
+|------|------------------------------------------------|---------------|
+| BinNumeric   | Describes a left-open & right-closed range for a numeric variable | `r slotNames("BinNumeric")` |
+| BinFactor    | Maps a single character input | `r slotNames("BinFactor")` |
+| BinException | Maps a single numeric input exactly | `r slotNames("BinException")` |
+| BinMissing   | Maps `NA` values only | `r slotNames("BinMissing")` |
+
+### Instantiating
+
+All of the objects in this vignette should not be used directly. The following examples aim to demonstrate how `Bin`
+objects work and should never need to directly implemented. Bins are instantiated differently depending on the type.
+
+```{r}
+n <- BinNumeric(lower=0, upper=10)
+
+f <- BinFactor(level="cat")
+
+e <- BinException(exception=-1)
+
+m <- BinMissing()
+```
+
+All bins have a `show` method when printed to the console:
+
+```{r}
+show(n)
+show(f)
+show(e)
+show(m)
+```
+
+### Combining
+
+Some bins can be combined. Testing whether two bins can be combined is done using the `combinable` method.
+
+```{r}
+combinable(n, n)
+combinable(f, f)
+combinable(n, f)
+combinable(n, e)
+combinable(n, m)
+```
+
+### Only `BinNumeric` are able to be combined. However they are only combined if their ranges overlap:
+
+```{r}
+A <- BinNumeric(lower=0, upper=20)
+B <- BinNumeric(lower=10, upper=30)
+C <- BinNumeric(lower=25, upper=50)
+
+combinable(A, B)
+combine(A, B) ## Combines and creates a single Bin with the new range
+
+combinable(A, C)
+combine(A, C) ## returns a list of the inputs
+
+Reduce(combine, list(A, B, C))
+Reduce(combine, list(A, C, B))
+
+```
+
+## Levels
+
+## Transforms
+
+
+
+
