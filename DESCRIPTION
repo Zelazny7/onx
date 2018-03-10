@@ -19,6 +19,7 @@ Collate:
     'generics.R'
     'class_bins.R'
     'class_level.R'
+    'class_performance.R'
     'class_transform.R'
     'class_variable.R'
 RoxygenNote: 5.0.1

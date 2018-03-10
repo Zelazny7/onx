@@ -29,10 +29,9 @@ setClass("Level", slots = c(bins="list", values="list"), contains="VIRTUAL")
 setMethod(
   "initialize",
   "Level",
-  function(.Object, bins=list(BinMissing()), values=list(value=NaN)) {
-
+  function(.Object, bins=list(), values=list(value=NaN)) {
     if (length(bins) > 1) bins <- Reduce(combine, bins)
-    .Object@bins <- bins[!duplicated(bins)]
+    .Object@bins <- if (length(bins) > 0) bins[!duplicated(bins)] else bins
     .Object@values <- values
     validObject(.Object)
     .Object
@@ -82,6 +81,9 @@ setMethod(
   "value<-",
   signature = c("Level", "list"),
   definition = function(object, value) {
+    if (any(names(value) %in% c("sparse", "label"))) {
+      stop("value names \"sparse\" and \"label\" are reserved")
+    }
     object@values <- modifyList(object@values, value)
     object
   }

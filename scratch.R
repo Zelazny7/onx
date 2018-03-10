@@ -1,12 +1,22 @@
-A <- BinNumeric(lower=0, upper=20)
-B <- BinNumeric(lower=10, upper=30)
-C <- BinNumeric(lower=25, upper=50)
+#n <- make_Transform(seq(2, 10, 2))
+#value(n) <- list(value=seq.int(len(n)), value2=sample(letters, (len(n))))
 
-combinable(A, B)
-combine(A, B) ## Combines and creates a single Bin with the new range
+#x <- sample(1:12, 1.5e5, T)
+#p <- predict(n, x, type="value2")
+#table(x, p)
 
-combinable(A, C)
-combine(A, C) ## returns a list of the inputs
+data(titanic, package="onyx")
+x <- titanic$Fare
+y <- titanic$Survived
+w <- rep(1, length(x))
 
-Reduce(combine, list(A, B, C))
-Reduce(combine, list(A, C, B))
+## create the transform
+tf <- make_Transform(quantile(x, seq(0.2, 0.8, 0.2)), addMissing=TRUE, exceptions=-1)
+
+v <- new("VariableContinuous", tf=tf, x=x)
+
+tf <- make_Transform(levels(titanic$Pclass), addMissing=TRUE)
+v <- new("VariableDiscrete", tf=tf, x=titanic$Pclass)
+
+
+p <- factor(predict(tf, x, "label"), levels=sapply(tf@levels, get_label))

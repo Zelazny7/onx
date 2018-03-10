@@ -133,8 +133,6 @@ test_that("Order Values", {
   expect_equal(ordervalue(G), matrix(c(1, -10), 1))
 
 
-
-
 })
 
 

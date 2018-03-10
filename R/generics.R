@@ -44,7 +44,7 @@ setGeneric("value<-", def = function(object, value) standardGeneric("value<-"))
 #'
 #' @param object An object that can be expanded.
 #' @param ... Additional arguments passed on to other methods.
-#' 
+#'
 #' @details Expand will expand an objecet if it can, returning multiple objects
 #' of the same class. Otherwise it will return the input object.
 #'
@@ -61,8 +61,8 @@ setGeneric("expand", def = function(object, ...) standardGeneric("expand"))
 #' @param a First object to be combined.
 #' @param b Second object to be combined.
 #' @param ... Additional arguments passed on to other methods.
-#' 
-#' @details Combine takes two objects of the same class and combines them 
+#'
+#' @details Combine takes two objects of the same class and combines them
 #' into one object of the same class.
 #'
 #' @export
@@ -77,7 +77,7 @@ setGeneric("combine", def = function(a, b, ...) standardGeneric("combine"))
 #'
 #' @param a First object.
 #' @param b Second object.
-#' 
+#'
 #' @details Combinable takes two objects and returns TRUE or FALSE for whether
 #' they can be combined. The \link{combine} function makes use of this test
 #' to implement conditional logic.
@@ -98,12 +98,11 @@ setGeneric("ordervalue", function(object, ...) standardGeneric("ordervalue"))
 #'
 #' @param object First object.
 #' @param ... Additional arguments passed on to other methods.
-#' 
+#'
 #' @export
 #' @docType methods
 #' @rdname Sort-methods
 setGeneric("Sort", function(object, ...) standardGeneric("Sort"))
-
 
 
 

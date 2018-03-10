@@ -29,9 +29,7 @@ setValidity(
     if (result) result else "All levels must be LevelDiscrete objects"
   })
 
-
 setMethod("len", "Transform", function(x) length(x@levels))
-
 
 setMethod(
   "add_level",
@@ -71,7 +69,6 @@ setMethod(
   "predict",
   signature = "Transform",
   function(object, x, type="value", mask=FALSE, ...) {
-    # type <- match.arg(type)
     switch(type,
 
            "label" = {
@@ -118,20 +115,17 @@ setMethod(
   "make_Transform",
   signature = "character",
   definition = function(x, addMissing=TRUE, exceptions) {
-    v <- TransformDiscrete()
+    tf <- TransformDiscrete()
 
     for (level in x) {
-      l <- LevelDiscrete()
-      l <- add_bin(l, BinFactor(level=level))
-      v <- add_level(v, l)
+      l <- LevelDiscrete(bins=list(BinFactor(level=level)))
+      tf <- add_level(tf, l)
     }
 
-    ## add missing level
-    if (addMissing) {
-      v <- add_level(v, add_bin(LevelDiscrete(), BinMissing()))
-    }
+    if (addMissing) tf <- add_level(tf, LevelDiscrete(bins=list(BinMissing())))
 
-    return(v)
+    validObject(tf, complete = TRUE)
+    tf
   }
 )
 
@@ -139,44 +133,46 @@ setMethod(
   "make_Transform",
   signature = c("numeric"),
   definition = function(x, addMissing=TRUE, exceptions) {
-    v <- TransformContinuous()
 
+    tf <- TransformContinuous()
     breaks <- sort(unique(c(-Inf, x, Inf)))
 
     for (i in seq.int(length(breaks) - 1)) {
-      l <- LevelContinuous()
-      l <- add_bin(l, BinNumeric(lower=breaks[[i]], upper=breaks[[i+1]]))
-      v <- add_level(v, l)
+      l <- LevelContinuous(bins=list(
+        BinNumeric(lower=breaks[[i]], upper=breaks[[i+1]])))
+      tf <- add_level(tf, l)
     }
 
     for (i in seq_along(exceptions)) {
-      v <- add_level(v, add_bin(LevelContinuous(),
-                                BinException(exception=exceptions[[i]])))
+      tf <- add_level(tf, LevelContinuous(bins=list(BinException(exception=exceptions[[i]]))))
     }
 
-    ## add missing level
-    if (addMissing) {
-      v <- add_level(v, add_bin(LevelContinuous(), BinMissing()))
-    }
+    if (addMissing) tf <- add_level(tf, LevelContinuous(bins=list(BinMissing())))
 
-    return(v)
+    validObject(tf, complete = TRUE)
+    tf
   })
 
 
+## assign named list to level values
 setMethod(
   "value<-",
-  signature = c("Transform", "ANY"),
+  signature = c("Transform", "list"),
   definition = function(object, value) {
 
-    stopifnot(identical(len(object), length(value[[1]])))
+    if (is.null(names(value))) stop("value must be a named list")
 
-    for (el in names(value)) {
+    ll <- do.call(mapply, c(value, list, SIMPLIFY=FALSE)) ## list of lists
 
-      for (i in seq_along(value[[el]])) {
-        value(object@levels[[i]]) <- setNames(list(value[[el]][i]), el)
-      }
-
+    if (!identical(len(object), length(ll))) {
+      stop("length of elements in \"value\" must match number of transform levels")
     }
+
+    for (i in seq_along(ll)) {
+      value(object@levels[[i]]) <- ll[[i]]
+    }
+
+    validObject(object)
     object
   })
 
@@ -196,7 +192,6 @@ setMethod(
 
 
 #
-# n <- make_Transform(letters[1:4])
 #
 #
 # value(n) <- list(value=1:5, butt=letters[6:10])
@@ -235,5 +230,22 @@ setMethod(
 # # #
 # # # predict(b, factor("c"), type="label")
 # # #
-# # #
-# # # n <- make_Transform(seq(0, 10, 2))
+# # #n
+
+#n <- make_Transform(seq(2, 10, 2))
+#value(n) <- list(value=seq.int(len(n)), value2=sample(letters, (len(n))))
+
+#predict(n, 1:100, "label")
+#
+# ## list of values
+# value <- list(value=1:5, woe=6:20)
+# value(n) <- list(value=1:5, woe=6:20)
+#
+# do.call(mapply, c(value, list, SIMPLIFY=FALSE))
+#
+# v <- list(value=1:10, woe=11:20)
+# ## get list of named lists
+#
+# ll <- mapply(list, v)
+#
+#
