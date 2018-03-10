@@ -71,7 +71,7 @@ combinable(n, e)
 combinable(n, m)
 ```
 
-### Only `BinNumeric` are able to be combined. However they are only combined if their ranges overlap:
+Only `BinNumeric` are able to be combined. However they are only combined if their ranges overlap:
 
 ```{r}
 A <- BinNumeric(lower=0, upper=20)

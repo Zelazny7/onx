@@ -21,5 +21,5 @@ Collate:
     'class_level.R'
     'class_transform.R'
     'class_variable.R'
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1
 VignetteBuilder: knitr

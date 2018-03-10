@@ -3,10 +3,10 @@
 \docType{methods}
 \name{get_label}
 \alias{get_label}
-\alias{get_label,BinNumeric-method}
+\alias{get_label,BinException-method}
 \alias{get_label,BinFactor-method}
 \alias{get_label,BinMissing-method}
-\alias{get_label,BinException-method}
+\alias{get_label,BinNumeric-method}
 \title{Get Object Labels}
 \usage{
 get_label(object, ...)
@@ -29,3 +29,4 @@ get_label(object, ...)
 \description{
 Some additional info
 }
+

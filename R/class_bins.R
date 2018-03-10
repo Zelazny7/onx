@@ -171,9 +171,6 @@ setMethod(
     object@exception
   })
 
-## show-Bin ----
-#' @rdname show-methods
-#' @aliases show,Bin-method
 setMethod(
   "show",
   signature = "Bin",
@@ -238,18 +235,18 @@ setMethod(
   "expand",
   signature = c("BinNumeric"),
   definition = function(object, breaks, ...) {
-    
+
     ## make sure breaks are between current lower and upper
     breaks <- subset(breaks, breaks <= object@upper & breaks >= object@lower)
     breaks <- sort(unique(c(object@lower, breaks, object@upper)))
-    
+
     if (length(breaks) <= 1) return(object)
-    
+
     l <- list()
     for (i in seq.int(length(breaks) - 1)) {
       l[[i]] <- BinNumeric(lower=breaks[[i]], upper=breaks[[i+1]])
     }
-    
+
     return(l)
   })
 

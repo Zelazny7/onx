@@ -73,12 +73,12 @@ setMethod(
   function(object, x, type="value", mask=FALSE, ...) {
     # type <- match.arg(type)
     switch(type,
-           
+
            "label" = {
              out <- rep("NULL", length(x))
              predict_internal_(out, object, x, mask, function(f, l) get_label(l))
            },
-           
+
            "sparse" = {
              out <- vector("list", length(object@levels))
              dims <- c(length(x), 1L)
@@ -87,7 +87,7 @@ setMethod(
              })
              do.call(cbind, out)
            },
-           
+
            { ## Default
              out <- rep(NaN, (length(x)))
              predict_internal_(out, object, x, mask, function(f, l) l@values[[type]])
@@ -119,18 +119,18 @@ setMethod(
   signature = "character",
   definition = function(x, addMissing=TRUE, exceptions) {
     v <- TransformDiscrete()
-    
+
     for (level in x) {
       l <- LevelDiscrete()
       l <- add_bin(l, BinFactor(level=level))
       v <- add_level(v, l)
     }
-    
+
     ## add missing level
     if (addMissing) {
       v <- add_level(v, add_bin(LevelDiscrete(), BinMissing()))
     }
-    
+
     return(v)
   }
 )
@@ -140,25 +140,25 @@ setMethod(
   signature = c("numeric"),
   definition = function(x, addMissing=TRUE, exceptions) {
     v <- TransformContinuous()
-    
+
     breaks <- sort(unique(c(-Inf, x, Inf)))
-    
+
     for (i in seq.int(length(breaks) - 1)) {
       l <- LevelContinuous()
       l <- add_bin(l, BinNumeric(lower=breaks[[i]], upper=breaks[[i+1]]))
       v <- add_level(v, l)
     }
-    
+
     for (i in seq_along(exceptions)) {
       v <- add_level(v, add_bin(LevelContinuous(),
                                 BinException(exception=exceptions[[i]])))
     }
-    
+
     ## add missing level
     if (addMissing) {
       v <- add_level(v, add_bin(LevelContinuous(), BinMissing()))
     }
-    
+
     return(v)
   })
 
@@ -167,15 +167,15 @@ setMethod(
   "value<-",
   signature = c("Transform", "ANY"),
   definition = function(object, value) {
-    
+
     stopifnot(identical(len(object), length(value[[1]])))
-    
+
     for (el in names(value)) {
-      
+
       for (i in seq_along(value[[el]])) {
         value(object@levels[[i]]) <- setNames(list(value[[el]][i]), el)
       }
-      
+
     }
     object
   })
@@ -184,50 +184,50 @@ setMethod(
   "show",
   signature = "Transform",
   definition = function(object) {
-    
+
     for (i in seq_along(object@levels)) {
       l <- object@levels[[i]]
       cat(sprintf("%2d: ", i), sep = "")
       show(l)
       cat("", sep = "\n")
     }
-    
+
   })
 
 
-
-n <- make_Transform(letters[1:4])
-
-
-value(n) <- list(value=1:5, butt=letters[6:10])
+#
+# n <- make_Transform(letters[1:4])
+#
+#
+# value(n) <- list(value=1:5, butt=letters[6:10])
 
 # predict(n, factor(letters), type="butt")
 
 
-# 
-# 
+#
+#
 # predict(b, factor(letters), type="sparse")
 # predict(b, factor(letters), type="sparse")
-# 
-# 
+#
+#
 # ## this is how to do collapsing ... Not quite
 # n <- make_Transform(seq(25, 75, 25))
 # ## test collapse
 # i <- c(1,5)
-# 
-# 
+#
+#
 # combined <- combine(n@levels[i])
 # rest <- n@levels[-i]
-# 
+#
 # v <- do.call(rbind, Map(ordervalue, c(combined, rest)))
 # i <- order(v[,1], v[,2])
-# 
-#  
+#
+#
 # TransformDiscrete(levels=c(combined, rest)[i])
-# # 
-# # 
-# # 
-# # 
+# #
+# #
+# #
+# #
 # # #
 # # # combine(b@levels[1:3])
 # # #

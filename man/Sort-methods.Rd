@@ -15,3 +15,4 @@ Sort(object, ...)
 \description{
 Sort a collection of objects by their \link{ordervalue}s
 }
+

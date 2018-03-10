@@ -20,3 +20,4 @@ Combinable takes two objects and returns TRUE or FALSE for whether
 they can be combined. The \link{combine} function makes use of this test
 to implement conditional logic.
 }
+

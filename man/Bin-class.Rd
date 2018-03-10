@@ -8,3 +8,4 @@
 The Bin abstract class for all unit bin levels such as
 \link{BinNumeric} \link{BinFactor}, \link{BinMissing}, and \link{BinException}.
 }
+

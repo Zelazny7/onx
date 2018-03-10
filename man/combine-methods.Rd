@@ -3,13 +3,12 @@
 \docType{methods}
 \name{combine}
 \alias{combine}
-\alias{combine,BinNumeric,BinNumeric-method}
 \alias{combine,Bin,Bin-method}
+\alias{combine,BinNumeric,BinNumeric-method}
 \alias{combine,Level,Level-method}
-\alias{combine,list,Level-method}
-\alias{combine,List,Level-method}
 \alias{combine,Level,list-method}
 \alias{combine,List,Level-method}
+\alias{combine,list,Level-method}
 \title{Combine Objects}
 \usage{
 combine(a, b, ...)
@@ -38,3 +37,4 @@ Combine combinable objects such as \link{Bin-class} or \link{Level-class}
 Combine takes two objects of the same class and combines them 
 into one object of the same class.
 }
+

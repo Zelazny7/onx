@@ -2,9 +2,9 @@
 % Please edit documentation in R/generics.R, R/class_bins.R
 \docType{methods}
 \name{expand}
+\alias{combineexpand,BinNumeric,BinNumeric-method}
 \alias{expand}
 \alias{expand,BinNumeric-method}
-\alias{combineexpand,BinNumeric,BinNumeric-method}
 \title{Expand an Object}
 \usage{
 expand(object, ...)
@@ -25,3 +25,4 @@ Expand an expandable object such as \link{Bin-class} or \link{Level-class}
 Expand will expand an objecet if it can, returning multiple objects
 of the same class. Otherwise it will return the input object.
 }
+
