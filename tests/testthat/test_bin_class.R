@@ -126,3 +126,18 @@ test_that("Bin labels", {
 
 })
 
+test_that("Order Values", {
+
+  a <- BinNumeric(lower=1, upper=10)
+  b <- BinFactor(level="Factor Level")
+  c <- BinMissing()
+  d <- BinException(exception=-1)
+
+  expect_equal(ordervalue(a), c(1, 1))
+  expect_equal(ordervalue(b), c(1, as.numeric(charToRaw("F"))))
+  expect_equal(ordervalue(c), c(3, Inf))
+  expect_equal(ordervalue(d), c(2, -1))
+
+
+})
+

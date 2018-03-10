@@ -267,7 +267,7 @@ setMethod("ordervalue", "character"   , function(object, ...) order_mapping[[obj
 setMethod("ordervalue", "BinNumeric"  , function(object, ...) c(ordervalue(class(object)), object@lower))
 
 setMethod("ordervalue", "BinFactor"   , function(object, ...) {
-  c(ordervalue(class(object)), as.numeric(charToRaw(object@level)))
+  c(ordervalue(class(object)), as.numeric(charToRaw(object@level))[[1]])
   })
 
 setMethod("ordervalue", "BinException", function(object, ...) c(ordervalue(class(object)), object@exception))

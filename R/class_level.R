@@ -189,6 +189,8 @@ setMethod("ordervalue", "Level", function(object, ...) {
   v[i==1,,drop=F]
 })
 
+
+
 ## TODO: Create tests for Level class
 
 
