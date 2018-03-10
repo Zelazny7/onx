@@ -192,10 +192,11 @@ setMethod(
     if (combinable(a, b)) {
       lower <- min(a@lower, b@lower)
       upper <- max(a@upper, b@upper)
-      return(BinNumeric(lower=lower, upper=upper))
+      out <- list(BinNumeric(lower=lower, upper=upper))
     } else {
-      return(list(a, b))
+      out <- list(a, b)
     }
+    return(out[!duplicated(out)])
   })
 
 
@@ -205,7 +206,10 @@ setMethod(
 setMethod(
   "combine",
   signature = c("Bin", "Bin"),
-  definition = function(a, b) return(list(a, b)))
+  definition = function(a, b){
+    out <- list(a, b)
+    return(out[!duplicated(out)])
+  })
 
 
 setMethod(

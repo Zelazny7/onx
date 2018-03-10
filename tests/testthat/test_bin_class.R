@@ -53,7 +53,7 @@ test_that("Combine", {
   expect_equal(combinable(a, BinException(exception=-1)), FALSE)
 
 
-  expect_equal(combine(a, b), BinNumeric(lower=1, upper=15))
+  expect_equal(combine(a, b), list(BinNumeric(lower=1, upper=15)))
   expect_equal(combine(a, c), list(a, c))
 
   e <- BinException(exception=-1)
@@ -72,13 +72,13 @@ test_that("Combine", {
   C <- BinNumeric(lower=25, upper=50)
 
   expect_equal(combinable(A, B), TRUE)
-  expect_equal(combine(A, B), BinNumeric(lower=0, upper=30))
+  expect_equal(combine(A, B), list(BinNumeric(lower=0, upper=30)))
 
   expect_equal(combinable(A, C), FALSE)
   expect_equal(combine(A, C), list(A, C))
 
-  expect_equal(Reduce(combine, list(A, B, C)), BinNumeric(lower=0, upper=50))
-  expect_equal(Reduce(combine, list(A, C, B)), BinNumeric(lower=0, upper=50))
+  expect_equal(Reduce(combine, list(A, B, C)), list(BinNumeric(lower=0, upper=50)))
+  expect_equal(Reduce(combine, list(A, C, B)), list(BinNumeric(lower=0, upper=50)))
 
 })
 
@@ -108,7 +108,7 @@ test_that("Expand bins",  {
 
   expect_equal(
     Reduce(combine, expand(BinNumeric(lower=1, upper=20), seq(1, 20, 4))),
-    BinNumeric(lower=1, upper=20))
+    list(BinNumeric(lower=1, upper=20)))
 
 })
 

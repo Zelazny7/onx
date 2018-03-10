@@ -28,14 +28,16 @@ setClass("Level", slots = c(bins="list", values="list"), contains="VIRTUAL")
 
 setMethod(
   "initialize",
-  signature = "Level",
-  function(.Object, bins=list(), values=list(Value=NaN), ...) {
-    .Object@values <- list(value=NaN)
-    .Object@bins <- bins[!duplicated(bins)] ## No duplicated bins
+  "Level",
+  function(.Object, bins=list(BinMissing()), values=list(value=NaN)) {
+
+    if (length(bins) > 1) bins <- Reduce(combine, bins)
+    .Object@bins <- bins[!duplicated(bins)]
+    .Object@values <- values
     validObject(.Object)
     .Object
-  })
-
+  }
+)
 
 #' @description \code{LevelContinuous} object contain a list of bins each of which
 #' belongs to the LevelContinuousAppendable class union. These bin types consist of
@@ -49,7 +51,11 @@ LevelContinuous <- setClass("LevelContinuous", contains="Level")
 setValidity(
   "LevelContinuous",
   function(object) {
-    res <- all(vapply(object@bins, is, TRUE, "LevelContinuousAppendable"))
+    if (identical(object@bins, list())) {
+      res <- TRUE
+    } else {
+      res <- all(vapply(object@bins, is, TRUE, "LevelContinuousAppendable"))
+    }
     if (res) res else "\"bins\" must be of type {\"BinNumeric\", \"BinException\", \"BinMissing\"}"
   })
 
@@ -93,18 +99,10 @@ setGeneric("add_bin", def = function(object, bin) standardGeneric("add_bin"))
 
 setMethod(
   "add_bin",
-  signature = c("LevelContinuous", "LevelContinuousAppendable"),
+  signature = c("Level", "Bin"),
   definition = function(object, bin) {
     object@bins <- append(object@bins, bin)
-    object
-  })
-
-setMethod(
-  "add_bin",
-  signature = c("LevelDiscrete", "LevelDiscreteAppendable"),
-  definition = function(object, bin) {
-    object@bins <- append(object@bins, bin)
-    object
+    Sort(object)
   })
 
 setMethod(
@@ -118,9 +116,7 @@ setMethod(
   "show",
   signature = "Level",
   definition = function(object) {
-
     cat(sprintf("%20s => %s", get_label(object), object@values[["value"]]))
-
   })
 
 
@@ -128,17 +124,12 @@ setMethod(
   "Sort",
   signature = "Level",
   definition = function(object, ...) {
-
     bins <- Reduce(combine, c(object@bins))
-    if (!is.list(bins)) bins <- list(bins)
     new(class(object), bins=bins)
   }
 )
 
 ################# Combine/Expand ----
-
-
-
 
 
 ## combine-Level,Level ----
@@ -150,7 +141,6 @@ setMethod(
   definition = function(a, b) {
 
     bins <- Reduce(combine, c(a@bins, b@bins))
-    if (!is.list(bins)) bins <- list(bins)
 
     ## sort by type then value within type
     v <- do.call(rbind, Map(ordervalue, bins))
