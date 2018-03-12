@@ -114,6 +114,25 @@ setMethod(
     do.call(c, lapply(object@bins, get_exceptions))
   })
 
+setGeneric("get_values", def = function(object, values, ...) standardGeneric("get_values"))
+
+## Return lists of requested values for all levels
+setMethod(
+  "get_values",
+  signature = c("Level", "character"),
+  definition = function(object, values, ...) {
+    if (!all(values %in% names(object@values))) stop("Not all requested values found.")
+    object@values[values]
+  })
+
+## if none requested, return ALL values
+setMethod(
+  "get_values",
+  signature = c("Level", "missing"),
+  definition = function(object, values, ...) {
+    object@values
+  })
+
 setMethod(
   "show",
   signature = "Level",

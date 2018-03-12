@@ -126,8 +126,7 @@ setMethod(
 
     validObject(tf, complete = TRUE)
     tf
-  }
-)
+  })
 
 setMethod(
   "make_Transform",
@@ -190,62 +189,45 @@ setMethod(
 
   })
 
+setMethod(
+  "get_values",
+  signature = c("Transform", "character"),
+  definition = function(object, values, ...) {
+    setNames(lapply(object@levels, get_values, values), get_label(object))
+  })
 
-#
-#
-#
-# value(n) <- list(value=1:5, butt=letters[6:10])
+setMethod(
+  "get_values",
+  signature = c("Transform", "missing"),
+  definition = function(object, values, ...) {
+    setNames(lapply(object@levels, get_values), get_label(object))
+  })
 
-# predict(n, factor(letters), type="butt")
+setMethod(
+  "get_label",
+  signature = c("Transform"),
+  definition = function(object, ...) {
+    vapply(object@levels, get_label, "")
+  })
+
+### TODO: Add collapse, expand
+setMethod("collapse", c("Transform", "numeric"), function(object, i) collapse(object, as.integer(i)))
+
+setMethod(
+  "collapse",
+  signature = c("Transform", "integer"),
+  definition = function(object, i) {
+
+    if (!all(i %in% seq.int(len(object)))) {
+      warning("invalid range for collapse requested")
+      return(object)
+    }
+
+    collapsed <- combine(object@levels[i])
+    out <- new(class(object), levels=c(collapsed, object@levels[-i]))
+    validObject(out)
+    out
+
+  })
 
 
-#
-#
-# predict(b, factor(letters), type="sparse")
-# predict(b, factor(letters), type="sparse")
-#
-#
-# ## this is how to do collapsing ... Not quite
-# n <- make_Transform(seq(25, 75, 25))
-# ## test collapse
-# i <- c(1,5)
-#
-#
-# combined <- combine(n@levels[i])
-# rest <- n@levels[-i]
-#
-# v <- do.call(rbind, Map(ordervalue, c(combined, rest)))
-# i <- order(v[,1], v[,2])
-#
-#
-# TransformDiscrete(levels=c(combined, rest)[i])
-# #
-# #
-# #
-# #
-# # #
-# # # combine(b@levels[1:3])
-# # #
-# # # value(b) <- c(1:3, NA)
-# # #
-# # # predict(b, factor("c"), type="label")
-# # #
-# # #n
-
-#n <- make_Transform(seq(2, 10, 2))
-#value(n) <- list(value=seq.int(len(n)), value2=sample(letters, (len(n))))
-
-#predict(n, 1:100, "label")
-#
-# ## list of values
-# value <- list(value=1:5, woe=6:20)
-# value(n) <- list(value=1:5, woe=6:20)
-#
-# do.call(mapply, c(value, list, SIMPLIFY=FALSE))
-#
-# v <- list(value=1:10, woe=11:20)
-# ## get list of named lists
-#
-# ll <- mapply(list, v)
-#
-#

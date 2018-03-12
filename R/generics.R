@@ -36,6 +36,7 @@ setGeneric("get_label", def = function(object, ...) standardGeneric("get_label")
 
 setGeneric("value<-", def = function(object, value) standardGeneric("value<-"))
 
+setGeneric("collapse", def = function(object, i) standardGeneric("collapse"))
 
 ## Expand an Object ----
 #' Expand an Object

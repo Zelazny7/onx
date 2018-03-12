@@ -17,5 +17,12 @@ Variable$methods(
   })
 
 VariableContinuous <- setRefClass("VariableContinuous", fields = c(tf="TransformContinuous", x="numeric"), contains="Variable")
+
+# VariableContinuous$methods(
+#   collapse = function(i) {
+#     tf@levels <<- combine(tf@levels[i])
+#   }
+#)
+
 VariableDiscrete <- setRefClass("VariableDiscrete", fields = c(tf="TransformDiscrete", x="factor"), contains="Variable")
 
