@@ -15,12 +15,13 @@ Suggests:
     rmarkdown
 Depends:
     Matrix
-Collate:
+Collate: 
     'generics.R'
     'class_bins.R'
+    'class_classing.R'
     'class_level.R'
     'class_performance.R'
     'class_transform.R'
     'class_variable.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 VignetteBuilder: knitr

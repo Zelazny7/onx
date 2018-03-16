@@ -3,8 +3,8 @@
 \docType{class}
 \name{Level-class}
 \alias{Level-class}
-\alias{LevelContinuous}
 \alias{LevelContinuous-class}
+\alias{LevelContinuous}
 \title{Level Class}
 \description{
 The level class consists of two main types: \code{LevelContinuous} and
@@ -22,7 +22,4 @@ belongs to the LevelContinuousAppendable class union. These bin types consist of
 
 \item{\code{values}}{A named list of values associated with the level.}
 }}
-\section{LevelContinuous}{
-
-}
 

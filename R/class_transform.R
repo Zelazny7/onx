@@ -54,40 +54,37 @@ setMethod(
     do.call(c, lapply(object@levels, get_exceptions))
   })
 
-## general looping function for prediction to DRY
-## TODO: DOCUMENT
-predict_internal_ <- function(out, object, x, mask=FALSE, FUN) {
-  for (i in seq_along(object@levels)) {
-    l <- object@levels[[i]]
+
+## get the indices of each?
+get_level_indices_ <- function(tf, x) {
+  mask <- x %in% get_exceptions(tf)
+  index <- integer(length(x))
+  for (i in seq_along(tf@levels)) {
+    l <- tf@levels[[i]]
     f <- get_boolean_mask(l, x, mask=mask)
-    if (is.list(out)) out[[i]] <- FUN(f, l) else out[f] <- FUN(f, l)
+    index[f] <- i
   }
-  return(out)
+  index
 }
 
+
+## TODO: DOCUMENT THIS!
 setMethod(
   "predict",
   signature = "Transform",
   function(object, x, type="value", mask=FALSE, ...) {
+    
+    i <- get_level_indices_(object, x)
+    
     switch(type,
 
-           "label" = {
-             out <- rep("NULL", length(x))
-             predict_internal_(out, object, x, mask, function(f, l) get_label(l))
-           },
+           "label" = get_label(object)[i],
 
-           "sparse" = {
-             out <- vector("list", length(object@levels))
-             dims <- c(length(x), 1L)
-             out <- predict_internal_(out, object, x, mask, function(f, l) {
-               sparseMatrix(i=which(f), j=rep(1, sum(f)), x=1, dims = dims)
-             })
-             do.call(cbind, out)
-           },
-
+           "sparse" = sparseMatrix(i=seq_along(i), j = i, x = 1, dims = c(length(i), len(object))),
+           
            { ## Default
-             out <- rep(NaN, (length(x)))
-             predict_internal_(out, object, x, mask, function(f, l) l@values[[type]])
+             v <- unlist(values(object, type), F, F)
+             unlist(v[i], F, F)
            })
   })
 
@@ -96,9 +93,9 @@ setMethod(
   signature = "TransformContinuous",
   function(object, x, type="value", ...) {
     stopifnot(is.numeric(x))
-    mask <- x %in% get_exceptions(object)
-    callNextMethod(object, x, type, mask=mask)
+    callNextMethod()
   })
+
 
 setMethod(
   "predict",
@@ -189,18 +186,29 @@ setMethod(
 
   })
 
+## Return the requested value in a list
+## Multiple requested values are stored in lists of lists
 setMethod(
-  "get_values",
+  "values",
   signature = c("Transform", "character"),
-  definition = function(object, values, ...) {
-    setNames(lapply(object@levels, get_values, values), get_label(object))
+  definition = function(object, value) {
+    
+    out <- list()
+    for (v in value) {
+      out[[v]] <- setNames(lapply(object@levels, values, v), get_label(object))
+    }
+    
+    return(out)
+    
   })
 
+## Return ALL values for each level in a list of lists
 setMethod(
-  "get_values",
+  "values",
   signature = c("Transform", "missing"),
-  definition = function(object, values, ...) {
-    setNames(lapply(object@levels, get_values), get_label(object))
+  definition = function(object, value) {
+    value <- names(object@levels[[1]]@values)
+    callGeneric(object, value)
   })
 
 setMethod(

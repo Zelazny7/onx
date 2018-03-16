@@ -1,5 +1,8 @@
 ## performance class
 
+## TODO:: thing about adding a valid perf flag stored with this object?
+## Could potentially allow for multiple performances ...
+
 # Can discretize?
 # takes x, w, y
 #

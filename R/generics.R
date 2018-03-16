@@ -36,6 +36,8 @@ setGeneric("get_label", def = function(object, ...) standardGeneric("get_label")
 
 setGeneric("value<-", def = function(object, value) standardGeneric("value<-"))
 
+setGeneric("values", def = function(object, value) standardGeneric("values"))
+
 setGeneric("collapse", def = function(object, i) standardGeneric("collapse"))
 
 ## Expand an Object ----
@@ -105,6 +107,21 @@ setGeneric("ordervalue", function(object, ...) standardGeneric("ordervalue"))
 #' @rdname Sort-methods
 setGeneric("Sort", function(object, ...) standardGeneric("Sort"))
 
+
+
+
+## Get Information About an Object ----
+#' Get Information About an Object
+#'
+#' Print descriptive information about an object and its slots/fields
+#'
+#' @param object Any \link{onx} object.
+#' @param ... Additional arguments passed on to other methods.
+#'
+#' @export
+#' @docType methods
+#' @rdname info-methods
+setGeneric("info", function(object, ...) standardGeneric("info"))
 
 
 

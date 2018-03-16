@@ -13,6 +13,15 @@ w <- rep(1, length(x))
 ## create the transform
 tf <- make_Transform(quantile(x, seq(0.2, 0.8, 0.2)), addMissing=TRUE, exceptions=-1)
 
+value(tf) <- list(test=lapply(letters[1:7], list))
+
+predict(tf, 1:100, "test")
+
+tf2 <- make_Transform(c("cat", "dog", "horse"), addMissing = FALSE, exceptions = -1)
+
+
+
+
 v <- new("VariableContinuous", tf=tf, x=x)
 
 tf <- make_Transform(levels(titanic$Pclass), addMissing=TRUE)
