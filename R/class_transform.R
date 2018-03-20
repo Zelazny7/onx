@@ -20,7 +20,7 @@ setValidity(
     if (result) result else "All levels must be LevelContinuous objects"
   })
 
-TransformDiscrete <- setClass("TransformDiscrete", contains = "Transform")
+TransformDiscrete <- setClass("TransformDiscrete", slots=list(factor_levels="character"), contains = "Transform")
 
 setValidity(
   "TransformDiscrete",
@@ -72,7 +72,7 @@ get_level_indices_ <- function(tf, x) {
 setMethod(
   "predict",
   signature = "Transform",
-  function(object, x, type="value", mask=FALSE, ...) {
+  function(object, x, type="value", ...) {
     
     i <- get_level_indices_(object, x)
     
@@ -80,13 +80,17 @@ setMethod(
 
            "label" = get_label(object)[i],
 
-           "sparse" = sparseMatrix(i=seq_along(i), j = i, x = 1, dims = c(length(i), len(object))),
+           "sparse" = {
+              if (any(i == 0)) stop("Factor levels not found and no missing fallback!")
+              sparseMatrix(i=seq_along(i), j = i, x = 1, dims = c(length(i), len(object)))
+             },
            
            { ## Default
              v <- unlist(values(object, type), F, F)
              unlist(v[i], F, F)
            })
   })
+
 
 setMethod(
   "predict",
@@ -102,7 +106,8 @@ setMethod(
   signature = "TransformDiscrete",
   function(object, x, type="value", ...) {
     stopifnot(is.factor(x))
-    callNextMethod()
+    x <- factor(x, levels=object@factor_levels)
+    callNextMethod(object=object, x=x, type=type, ...)
   })
 
 
@@ -112,7 +117,7 @@ setMethod(
   "make_Transform",
   signature = "character",
   definition = function(x, addMissing=TRUE, exceptions) {
-    tf <- TransformDiscrete()
+    tf <- TransformDiscrete(factor_levels=x)
 
     for (level in x) {
       l <- LevelDiscrete(bins=list(BinFactor(level=level)))

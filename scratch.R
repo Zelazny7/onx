@@ -17,7 +17,7 @@ value(tf) <- list(test=lapply(letters[1:7], list))
 
 predict(tf, 1:100, "test")
 
-tf2 <- make_Transform(c("cat", "dog", "horse"), addMissing = FALSE, exceptions = -1)
+tf2 <- make_Transform(c("cat", "dog", "horse"), exceptions = -1)
 
 
 
