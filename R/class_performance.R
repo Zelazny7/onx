@@ -1,3 +1,5 @@
+#' @include class_transform.R
+
 ## performance class
 
 ## TODO:: thing about adding a valid perf flag stored with this object?
@@ -7,35 +9,89 @@
 # takes x, w, y
 #
 
-Perf <- setClass("Perf", list(y="vector"), contains="VIRTUAL")
+Perf <- setClass("Perf", list(y="vector", w="numeric", valid="logical"), contains="VIRTUAL")
 
-setGeneric("discretize", def = function(perf, discretizer, x, w, ...) standardGeneric("discretize"))
-
-setClass("Discretizer", contains = "VIRTUAL")
-
-QuantileDiscretizer <- setClass("QuantileDiscretizer", contains = "Discretizer")
-IVDiscretizer <- setClass("IVDiscretizer", contains = "Discretizer")
-VarianceDiscretizer <- setClass("VarianceDiscretizer", contains = "Discretizer")
-
-#' @importFrom Hmisc wtd.quantile
 setMethod(
-  "discretize",
-  "signature" = c("Perf", "QuantileDiscretizer"),
-  definition = function(perf, discretizer, x, w=rep(1, length(x)), probs=seq(0.2, 0.8, 0.2), ...) {
-    breaks <- Hmisc::wtd.quantile(x, w, probs, na.rm = TRUE)
-    tf <- make_Transform(breaks, ...)
-    tf
-  })
+  "initialize",
+  "Perf",
+  function(.Object, y, w) {
+    .Object@y <- y
+    .Object@w <- if (missing(w)) rep(1, length(y)) else w
+    stopifnot(identical(length(.Object@y), length(.Object@w)))
+    .Object@valid <- !is.na(y)
+    validObject(.Object)
+    .Object
+  }
+)
 
 
-setMethod("discretize", def = function(perf, discretizer, ...) standardGeneric("discretize"))
+setMethod("summarize", c("Perf", "logical"), function(object, by, ...) stop("Must Implement"))
+
+
 
 PerfBinary <- setClass("PerfBinary", list(y="integer"), contains = "Perf")
+PerfContinuous <- setClass("PerfContinuous", list(y="numeric"), contains = "Perf")
+
+
+
+setMethod(
+  "summarize",
+  c("PerfBinary", "logical"),
+  function(object, by=TRUE, totals, ...) {
+    
+    f <- by & object@valid
+    
+    ## create a filter for valid records to summarize
+    if (missing(totals)) totals <-
+        c("#0"=sum(object@w[f & object@y == 0]),
+          "#1"=sum(object@w[f & object@y == 1]))
+    
+    ## create summary pieces
+    N <- sum(object@w[f])
+    `#1` <- sum(object@w[f & object@y == 1])
+    `#0` <- (N - `#1`)
+    `%N` <- N / (totals[["#1"]] + totals[["#0"]])
+    `%1` <- `#1` / totals[["#1"]]
+    `%0` <- `#0` / totals[["#0"]]
+    `P(1)` <- `#1` / N
+    WoE <- log(`%1` / `%0`)
+    IV <- WoE * (`%1` - `%0`)
+    
+    ## put it all in a data.frame
+    data.frame(N, `#1`, `#0`, `%N`, `%1`, `%0`, `P(1)`, WoE, IV, check.names = FALSE)
+    
+  }
+)
+
+setMethod(
+  "summarize",
+  c("PerfContinuous", "logical"),
+  function(object, by=TRUE, totals, ...) {
+    
+    f <- by & object@valid
+    
+    wtd <- object@w[f] * object@y[f]
+    
+    ## create a filter for valid records to summarize
+    if (missing(totals)) totals <-c("N"=sum(object@w[f]), "sum"=sum(wtd))
+    
+    ## create summary pieces
+    N <- sum(object@w[f])
+    `%N` <- N / totals[["N"]]
+    sum <- sum(wtd)
+    `%sum` <- sum / totals[["sum"]]
+    mean <- sum/N
+    var <- sum(object@w[f] * ((object@y[f] - mean)^2))/N
+    
+    ## put it all in a data.frame
+    data.frame(N, `%N`, sum, `%sum`, mean, var, check.names = FALSE)
+    
+  }
+)
 
 
 
 
-# y <- Perf(y=titanic$Survived)
 #
 # classing <- vector("list", length = 100)
 #

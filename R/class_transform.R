@@ -29,6 +29,13 @@ setValidity(
     if (result) result else "All levels must be LevelDiscrete objects"
   })
 
+setMethod(
+  "get_boolean_mask",
+  signature = c("Transform", "ANY"),
+  function(object, x, ...) {
+    lapply(object@levels, function(lvl) get_boolean_mask(lvl, x))
+  })
+
 setMethod("len", "Transform", function(x) length(x@levels))
 
 setMethod(

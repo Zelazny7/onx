@@ -40,6 +40,20 @@ setGeneric("values", def = function(object, value) standardGeneric("values"))
 
 setGeneric("collapse", def = function(object, i) standardGeneric("collapse"))
 
+## Summarize Objects ----
+#' Summarize Objects
+#'
+#' Summarize an object, optionally by another object
+#'
+#' @param object An object to summarize
+#' @param by Another object to summarize param object by
+#' @param ... Additional arguments passed on to other methods.
+#'
+#' @export
+#' @docType methods
+#' @rdname get_label-methods
+setGeneric("summarize", def = function(object, by=TRUE, ...) standardGeneric("summarize"))
+
 ## Expand an Object ----
 #' Expand an Object
 #'
